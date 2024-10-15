@@ -1,11 +1,12 @@
 import matplotlib.pyplot as plt
+import os
 import scipy.integrate
 import time
 
 import ode
 
 
-def plot_figure_AB(sol):
+def plot_figure_AB(sol, path: str | None):
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8))
     ax1.plot(sol.t, sol.y[:][5])
     ax1.set_title("Life cycle of A")
@@ -15,10 +16,14 @@ def plot_figure_AB(sol):
     ax2.plot(sol.t, sol.y[:][7])
     ax2.set_title("Life cycle of R")
     ax2.set_xlim([0, 400])
-    ax2.set_ylim([0, 2000])
+    ax2.set_ylim([0, 2500])
 
     plt.tight_layout()
     plt.show()
+
+    if path is not None:
+        path = os.path.join(path, "figure" + time.strftime("%H%M%S"))
+        fig.savefig(path)
 
 
 def solve_my_IVP(method: str, initial_values: ode.Variables):
@@ -44,7 +49,7 @@ def main() -> None:
     solve_my_IVP("Radau", initial_values)
     sol = solve_my_IVP("BDF", initial_values)
 
-    plot_figure_AB(sol)
+    plot_figure_AB(sol, "figures")
 
     return
 

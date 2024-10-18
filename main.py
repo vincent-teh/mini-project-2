@@ -6,7 +6,7 @@ import time
 import ode
 
 
-def plot_figure_AB(sol, path: str | None):
+def plot_figure_AB(sol, name: str, path: str | None):
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8))
     ax1.plot(sol.t, sol.y[:][5])
     ax1.set_title("Life cycle of A")
@@ -16,14 +16,15 @@ def plot_figure_AB(sol, path: str | None):
     ax2.plot(sol.t, sol.y[:][7])
     ax2.set_title("Life cycle of R")
     ax2.set_xlim([0, 400])
-    ax2.set_ylim([0, 2500])
+    ax2.set_ylim([0, 2000])
 
-    plt.tight_layout()
-    plt.show()
+    fig.suptitle(name)
+    fig.tight_layout()
+    fig.show()
 
     if path is not None:
-        path = os.path.join(path, "figure" + time.strftime("%H%M%S"))
-        fig.savefig(path)
+        path = os.path.join(path, "figure" + time.strftime("%H%M%S") + ".eps")
+        fig.savefig(path, format="eps")
 
 
 def solve_my_IVP(method: str, initial_values: ode.Variables):
@@ -45,11 +46,9 @@ def main() -> None:
                                     R=0,
                                     C=0,
                                     )
-    solve_my_IVP("RK45", initial_values)
-    solve_my_IVP("Radau", initial_values)
-    sol = solve_my_IVP("BDF", initial_values)
-
-    plot_figure_AB(sol, "figures")
+    for method in ("RK45", "Radau", "BDF"):
+        sol = solve_my_IVP(method, initial_values)
+        plot_figure_AB(sol, method, "figures")
 
     return
 
